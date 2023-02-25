@@ -1,0 +1,6 @@
+
+git rm --cached -r node_modules
+
+
+repository 내 node_moduiles 이름의 디렉터리는 모두 무시! 맨 뒤의 / 도 잊지 말자
+**/node_modules/
