@@ -2,6 +2,9 @@ const path = require('path')
 // const MyWebpackPlugin = require('./my-webpack-plugin')
 const webpack = require('webpack')
 const childProcess = require('child_process')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     mode: 'development',
@@ -20,11 +23,18 @@ module.exports = {
                     path.resolve('./my-webpack-loader.js')
                 ]
             },
+            // {
+            //     test: /\.css$/,
+            //     use: [
+            //         'style-loader',
+            //         'css-loader', 
+            //     ]
+            // },
             {
                 test: /\.css$/,
                 use: [
-                    'style-loader',
-                    'css-loader', 
+                    process.env.NODE_ENV === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+                    'css-loader'
                 ]
             },
             {
@@ -32,7 +42,7 @@ module.exports = {
                 // loader: 'file-loader',
                 loader: 'url-loader',
                 options: {
-                    publicPath: './dist/',
+                    // publicPath: './dist/',
                     name: "image/[name].[ext]?[hash]",
                     limit: 20000, //2kb
                 }
@@ -46,6 +56,24 @@ module.exports = {
                 Commit Version: ${childProcess.execSync('git rev-parse --short HEAD')}
                 Author: ${childProcess.execSync('git config user.name')}
             `
-        })
+        }),
+        new webpack.DefinePlugin({
+            TWO: '1+1',
+            THREE: JSON.stringify('1+2'),
+            'api.domain': JSON.stringify('http://dev.api.domain.com')
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            templateParameters: {
+                env: process.env.NODE_ENV === 'development' ? '(개발용)' : '' // NODE_ENV=development npm run build 혹은 NODE_ENV=production npm run build
+            },
+            minify: process.env.NODE_ENV === 'production' ? {
+                collapseWhitespace: true,
+                removeComments: true
+            }: false
+        }),
+        new CleanWebpackPlugin(), // remove dist
+        ...(process.env.NODE_ENV === 'production' ? [new MiniCssExtractPlugin({filename: '[name].css'})] : [])
+        
     ]
 }
