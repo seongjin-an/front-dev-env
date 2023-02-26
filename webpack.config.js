@@ -9,7 +9,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports = {
     mode: 'development',
     entry: {
-        main:'./src/app.js'
+        // main:'./src/app.js'
+        main:'./app.js'
     },
     output: {
         path: path.resolve('./dist'),
@@ -17,12 +18,18 @@ module.exports = {
     },
     module: {
         rules: [
+            // {
+            //     test: /\.js$/,
+            //     use: [
+            //         path.resolve('./my-webpack-loader.js')
+            //     ]
+            // },
             {
                 test: /\.js$/,
-                use: [
-                    path.resolve('./my-webpack-loader.js')
-                ]
-            },
+                exclude: /node_modules/,
+                loader: "babel-loader", // 바벨 로더를 추가한다
+              },
+        
             // {
             //     test: /\.css$/,
             //     use: [
