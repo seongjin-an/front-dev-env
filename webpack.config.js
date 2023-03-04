@@ -16,6 +16,15 @@ module.exports = {
         path: path.resolve('./dist'),
         filename: '[name].js'
     },
+    devServer: {
+        // contentBase: path.join(__dirname, "dist"),
+        // publicPath: "/",
+        host: "dev.domain.com",
+        // overlay: true,
+        port: 8081,
+        // stats: "errors-only",
+        historyApiFallback: true,
+    },
     module: {
         rules: [
             // {
