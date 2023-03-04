@@ -2,7 +2,7 @@ import axios from 'axios'
 import './app.css'
 import nyancat from './nyancat.jpg';
 import form from './form.js'
-import result from './result.js'
+// import result from './result.js'
 
 let formEl;
 let resultEl;
@@ -20,9 +20,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     formEl.innerHTML = form.render()
     document.body.appendChild(formEl)
 
-    resultEl = document.createElement("div")
-    resultEl.innerHTML = await result.render();
-    document.body.appendChild(resultEl);
+    // resultEl = document.createElement("div")
+    // resultEl.innerHTML = await result.render();
+    // document.body.appendChild(resultEl);
+    import(/* webpackChunkName: "result" */"./result.js").then(async m => {
+        const result = m.default;
+        resultEl = document.createElement("div")
+        resultEl.innerHTML = await result.render();
+        document.body.appendChild(resultEl);
+    })
 })
 
 console.log(process.env.NODE_ENV)

@@ -6,12 +6,19 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const apiMocker = require('connect-api-mocker')
+const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
+const mode = process.env.NODE_ENV ||"development"
 
 module.exports = {
-    mode: 'development',
+    // mode: 'development',
+    mode,
     entry: {
-        main:'./src/app.js'
+        main:'./src/app.js',
         // main:'./app.js'
+        // result: './src/result.js'
     },
     output: {
         path: path.resolve('./dist'),
@@ -83,6 +90,24 @@ module.exports = {
           },
         //   hot: true
     },
+    optimization: {
+        minimizer: mode === 'production' ? [
+            new CssMinimizerWebpackPlugin(),
+            new TerserWebpackPlugin({
+                terserOptions: {
+                    compress: {
+                      drop_console: true, // 콘솔 로그를 제거한다
+                    },
+                  },
+            })
+        ] : [],
+        // splitChunks: {
+        //     chunks: 'all'
+        // },
+    },
+    externals: {
+        axios: "axios"
+    },
     module: {
         rules: [
             // {
@@ -147,7 +172,14 @@ module.exports = {
             }: false
         }),
         new CleanWebpackPlugin(), // remove dist
-        ...(process.env.NODE_ENV === 'production' ? [new MiniCssExtractPlugin({filename: '[name].css'})] : [])
-        
+        ...(process.env.NODE_ENV === 'production' ? [new MiniCssExtractPlugin({filename: '[name].css'})] : []),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: './node_modules/axios/dist/axios.min.js',
+                    to: './axios.min.js'
+                }
+            ]
+        })
     ]
 }
